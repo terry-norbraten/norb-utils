@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="https://logging.apache.org/xml/ns"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="
+                   https://logging.apache.org/xml/ns
+                   https://logging.apache.org/xml/ns/log4j-config-2.xsd">
+    <Properties>
+        <Property name="LOG_PATTERN" value="[%-5level] %d{yyyy MMM dd HH:mm:ss 'GMT'Z} [%t] %C:%L - %m%n"/>
+        <Property name="CONSOLE_PATTERN" value="%highlight{%-5level}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green} %style{%d{yyyy MMM dd HH:mm:ss 'GMT'Z}}{blue} [%t] %C:%L - %m%n"/>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${CONSOLE_PATTERN}"/>
+        </Console>
+        <RollingFile name="RollingLogFile" fileName="logs/error.0.log" filePattern="logs/error.%i.log" >
+            <LevelRangeFilter minLevel="FATAL" maxLevel="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+            <!--<DefaultRolloverStrategy max="20" fileIndex="min"/>-->
+        </RollingFile>
+        <RollingFile name="InfoLog" fileName="logs/utils.0.log" filePattern="logs/utils.%i.log">
+            <LevelRangeFilter minLevel="WARN" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+            <!--<DefaultRolloverStrategy max="20" fileIndex="min"/>-->
+        </RollingFile>
+        <RollingFile name="DebugLog" fileName="logs/debug.0.log" filePattern="logs/debug.%i.log">
+            <LevelRangeFilter minLevel="DEBUG" maxLevel="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingLogFile"/>
+            <AppenderRef ref="InfoLog" />
+            <AppenderRef ref="DebugLog"/>
+        </Root>
+    </Loggers>
+</Configuration>
