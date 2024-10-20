@@ -41,7 +41,7 @@ public class ProjectResourcesTest extends Assert {
     @Test
     public void testGetProperty() {
         System.out.println("getProperty");
-        String prop = "hellow.world";
+        String prop = "hello.world";
         String expResult = "Hello World!";
         String result = ProjectResources.getProperty(prop);
         assertEquals(expResult, result);
