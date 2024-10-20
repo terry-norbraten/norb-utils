@@ -31,6 +31,7 @@
         <apache.ant.version>1.10.14</apache.ant.version>
         <open.map.version>5.0.3</open.map.version>
         <jdom.version>2.0.2</jdom.version>
+        <run.suite>com.norb.utils.UtilsTestSuite</run.suite>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.jdom/jdom -->
@@ -132,6 +133,16 @@
                                 <X-Compiler-Release-Verion>${maven.compiler.release}</X-Compiler-Release-Verion>
                             </manifestEntries>
                         </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.5.1</version>
+                    <configuration>
+                        <includes>
+                            <include>${run.suite}</include>
+                        </includes>
                     </configuration>
                 </plugin>
             </plugins>
