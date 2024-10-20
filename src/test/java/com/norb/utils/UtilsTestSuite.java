@@ -9,9 +9,10 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    com.norb.utils.FileIOTest.class,
-    com.norb.utils.StreamCopierTest.class,
-    com.norb.utils.StreamReaderTest.class,
-    com.norb.utils.ProjectResourcesTest.class
+    FileIOTest.class,
+    DateTimeGroupStampTest.class,
+    ProjectResourcesTest.class,
+    StreamCopierTest.class,
+    StreamReaderTest.class
 })
 public class UtilsTestSuite {}

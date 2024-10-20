@@ -104,19 +104,37 @@ public class DateTimeGroupStamp {
     static final Logger LOG = LogUtils.getLogger(DateTimeGroupStamp.class);
 
     private final String BASEDIR = ".";
-    private final String PATHSEP = "/";
+    private final String PATHSEP = File.pathSeparator;
 
-    /** Name of the data file folder here */
-    private final String DATA_FILE_FOLDER = "";
+    /** Name of the data file folder in build.properties */
+    private final String DATA_FILE_FOLDER = ProjectResources.getProperty("data.folder");
     private final String DATA_FILE_PATH = BASEDIR + PATHSEP + DATA_FILE_FOLDER + PATHSEP;
 
+    private static DateTimeGroupStamp instance;
+
     /** Calendar instance to craft our DTG */
-    private final Calendar calendar = Calendar.getInstance();
+    private final Calendar calendar;
+
+    public static DateTimeGroupStamp getInstance() {
+        if (instance == null)
+            instance = new DateTimeGroupStamp();
+
+        return instance;
+    }
+
+    /** Intended for a one time static return of a current DTG
+     * @return the current DTG in String form
+     */
+    public static String getCurrentDateTimeGroup() {
+        DateTimeGroupStamp dtg = new DateTimeGroupStamp();
+        return dtg.getDateTimeGroup();
+    }
 
     /** Creates a new instance of DateTimeGroupStamp which immediately sets Zulu
      * time
      */
-    public DateTimeGroupStamp() {
+    private DateTimeGroupStamp() {
+        calendar = Calendar.getInstance();
         setZulu();
     }
 
@@ -203,10 +221,17 @@ public class DateTimeGroupStamp {
      * @return the full Date Time Group stamp
      */
     public String getDateTimeGroup() {
-        return String.valueOf((getDate() < 10) ? "0" + getDate() : getDate()) +
-                ((getHourOfDay() < 10) ? "0" + getHourOfDay() : getHourOfDay()) +
-                ((getMinute() < 10) ? "0" + getMinute() : getMinute()) + "Z" +
-                getMonthAbreviation() + getYear();
+        StringBuilder sb = new StringBuilder();
+        String str = String.valueOf((getDate() < 10) ? "0" + getDate() : getDate());
+        sb.append(str);
+        str = String.valueOf((getHourOfDay() < 10) ? "0" + getHourOfDay() : getHourOfDay());
+        sb.append(str);
+        str = String.valueOf((getMinute() < 10) ? "0" + getMinute() : getMinute());
+        sb.append(str);
+        sb.append("Z");
+        sb.append(getMonthAbreviation());
+        sb.append(getYear());
+        return sb.toString();
     }
 
     /** Set Calendar instance for Zulu time.  If we are west of the prime
@@ -216,30 +241,18 @@ public class DateTimeGroupStamp {
         getCalendar().setTimeInMillis(getCalendar().getTimeInMillis() - getZoneOffset());
     }
 
-    /** Intended for a one time static return of a current DTG
-     * @return the current DTG in String form
-     */
-    public static String getCurrentDateTimeGroup() {
-        DateTimeGroupStamp dtg = new DateTimeGroupStamp();
-        return dtg.getDateTimeGroup();
-    }
-
     /** @param args Command Line arguments (if any) */
     public static void main(String[] args) {
         DateTimeGroupStamp dtgs = new DateTimeGroupStamp();
-        LOG.debug("Zone offset in hours: " + Math.round(dtgs.getZoneOffset() * (2.77777778 * Math.pow(10, -7))));
+        LOG.debug("Zone offset in hours: " + Math.round(dtgs.getZoneOffset() * (2.77777778 * Math.pow(10, -7)))); // <- very questionable
         LOG.debug("Zone offset in miliseconds: " + dtgs.getZoneOffset());
-        LOG.info("Current DTG: " + dtgs.getDateTimeGroup());
+        LOG.info("Current DTG: " + DateTimeGroupStamp.getCurrentDateTimeGroup());
 
-        PrintWriter out;
-        try {
+        try (PrintWriter out = new PrintWriter(new File("buildStamp.txt"))) {
 
             // the destination of this file should be the base directory
-            out = new PrintWriter(new File("buildStamp.txt"));
             out.write("Current " + DateTimeGroupStamp.class.getName() + " build is: " + DateTimeGroupStamp.getCurrentDateTimeGroup());
-            out.close();
         } catch (FileNotFoundException ex) {LOG.fatal(ex);}
-
     }
 
 } // end class file DateTimeGroupStamp.java
